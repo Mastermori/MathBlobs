@@ -1,18 +1,16 @@
 package de.mathblobs.main;
 
-import de.mathblobs.entities.Entity;
 import de.mathblobs.entities.Player;
 import processing.core.PApplet;
 
 public class Main extends PApplet {
 
-    public static Main inst;
+    public static Main pa;
 
     public static Player player;
 
     public Main(){
-        inst = this;
-        Entity.pa = inst;
+        pa = this;
     }
 
     @Override

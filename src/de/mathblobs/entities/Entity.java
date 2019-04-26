@@ -1,14 +1,12 @@
 package de.mathblobs.entities;
 
-import de.mathblobs.main.Drawable;
 import de.mathlib.Vector2;
-import processing.core.PApplet;
+import static de.mathblobs.main.Main.pa;
 
-public abstract class Entity implements Drawable {
+public abstract class Entity {
 
     protected Vector2 pos;
     protected Vector2 size;
-    public static PApplet pa;
 
     public Entity(int x, int y, int width, int height) {
         this(new Vector2(x, y), new Vector2(width, height));
@@ -17,6 +15,7 @@ public abstract class Entity implements Drawable {
     public Entity(Vector2 pos, Vector2 size) {
         this.pos = pos;
         this.size = size;
+        pa.println("Test successful");
     }
 
     public Vector2 getPos() {
@@ -27,7 +26,6 @@ public abstract class Entity implements Drawable {
         this.pos = pos;
     }
 
-    @Override
     public Vector2 getSize() {
         return size;
     }
