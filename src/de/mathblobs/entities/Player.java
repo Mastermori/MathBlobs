@@ -6,8 +6,5 @@ public class Player extends Entity {
         super(x, y, 100, 100);
     }
 
-    @Override
-    public void draw() {
 
-    }
 }
