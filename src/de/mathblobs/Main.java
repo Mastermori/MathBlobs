@@ -3,6 +3,7 @@ package de.mathblobs;
 import de.mathblobs.entities.EntityHandler;
 import de.mathblobs.entities.Player;
 import de.mathblobs.entities.Projectile;
+import de.mathblobs.input.KeyboardInput;
 import de.mathlib.Vector2;
 import processing.core.PApplet;
 
@@ -10,7 +11,12 @@ public class Main extends PApplet {
 
     public static Main inst;
 
+    public static String title = "Mathematic Blobs";
+
     public static EntityHandler entityHandler;
+    public static EntityHandler projectileHandler;
+
+    public static TimerHandler timerHandler;
 
     public static Player player;
     public static Projectile bullet;
@@ -24,6 +30,11 @@ public class Main extends PApplet {
     @Override
     public void setup() {
         entityHandler = new EntityHandler();
+        projectileHandler = new EntityHandler();
+
+        timerHandler = new TimerHandler();
+
+        timerHandler.addTimer("FPS", new Timer(1f, () -> surface.setTitle(title + "     " + frameRate)));
 
         player = new Player(100, 100);
 
@@ -48,9 +59,31 @@ public class Main extends PApplet {
         float delta = (currentTime - lastTime) / 1000f;
         lastTime = currentTime;
 
-        entityHandler.update(delta);
+        if(KeyboardInput.keyJustDown(32))
+            System.out.println("SPACE");
 
+        projectileHandler.update(delta);
+        entityHandler.update(delta);
+        timerHandler.update(delta);
+
+        entityHandler.checkCollision(projectileHandler);
+
+        projectileHandler.draw();
         entityHandler.draw();
+
+        KeyboardInput.update(delta);
+
+    }
+
+    @Override
+    public void keyPressed() {
+        KeyboardInput.keyPressed(keyCode, key);
+        System.out.println(keyCode);
+    }
+
+    @Override
+    public void keyReleased() {
+        KeyboardInput.keyReleased(keyCode, key);
     }
 
     @Override
