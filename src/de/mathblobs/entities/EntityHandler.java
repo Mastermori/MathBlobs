@@ -23,21 +23,38 @@ public class EntityHandler {
 
     //---------- UPDATE ----------
     public void update(float delta) {
-
-        updateEntities();
+        updateLists();
 
         entities.forEach((e) -> e.update(delta));
     }
 
     //---------- DRAW ----------
     public void draw() {
-        updateEntities();
-
         entities.forEach((e) -> e.draw());
     }
 
+    //---------- COLLISION CHECK ----------
+    public void checkCollision(EntityHandler handler) {
+        List<Entity> otherEntities = handler.entities;
+        for (Entity e : entities) {
+            for (Entity oe : otherEntities) {
+                if (checkEntityCollision(e, oe)) {
+                    e.collide(oe);
+                    oe.collide(e);
+                }
+            }
+        }
+    }
+
+    private boolean checkEntityCollision(Entity e1, Entity e2) {
+        return e1.getHorizontalColliders().y > e2.getHorizontalColliders().x
+                && e1.getHorizontalColliders().x < e2.getHorizontalColliders().x
+                && e1.getVerticalColliders().y > e2.getVerticalColliders().x
+                && e1.getVerticalColliders().x < e2.getVerticalColliders().y;
+    }
+
     //---------- LIST MANAGEMENT METHODS ----------
-    private void updateEntities() {
+    private void updateLists() {
         if(!rem.isEmpty()) {
             rem.forEach((e) -> entities.remove(e));
             rem.clear();

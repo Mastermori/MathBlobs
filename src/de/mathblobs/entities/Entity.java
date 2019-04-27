@@ -13,16 +13,19 @@ public abstract class Entity {
     protected Vector2 vel;
     protected Vector2 acc;
 
-    public Entity(int x, int y, int width, int height) {
-        this(new Vector2(x, y), new Vector2(width, height));
+    protected EntityHandler handler;
+
+    public Entity(int x, int y, int width, int height, EntityHandler handler) {
+        this(new Vector2(x, y), new Vector2(width, height), handler);
     }
 
-    public Entity(Vector2 pos, Vector2 size) {
+    public Entity(Vector2 pos, Vector2 size, EntityHandler handler) {
         this.pos = pos;
         this.size = size;
+        this.handler = handler;
+        handler.addEntity(this);
         vel = new Vector2(0, 0);
         acc = new Vector2(0, 0);
-        Main.entityHandler.addEntity(this);
     }
 
     public void update(float delta){
@@ -33,6 +36,16 @@ public abstract class Entity {
     public void draw(){
         pa.fill(0);
         pa.rect(pos.x, pos.y, size.x, size.y);
+    }
+
+    public abstract void collide(Entity other);
+
+    public Vector2 getHorizontalColliders() {
+        return new Vector2(pos.x, pos.x + size.x);
+    }
+
+    public Vector2 getVerticalColliders() {
+        return new Vector2(pos.y, pos.y + size.y);
     }
 
     public void addVel(Vector2 add) {
@@ -59,7 +72,7 @@ public abstract class Entity {
         this.size = size;
     }
 
-    public void destory() {
-        Main.entityHandler.removeEntity(this);
+    public void destroy() {
+        handler.removeEntity(this);
     }
 }
