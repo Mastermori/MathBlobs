@@ -84,14 +84,16 @@ public class KeyboardInput {
      * @param delta time used for calculation
      */
     public static void update(float delta) {
-        commands.forEach(KeyBind::checkAction); //Check all KeyCommands and call them, if they are pressed (see KeyBind.isFulfilled())
-
+        updateCommands();
         //After the check, clear the justPressed and justReleased lists so they are only true for one frame
         justPressed.clear();
         justReleased.clear();
     }
 
     //---------- COMMANDS ----------
+    private static void updateCommands() {
+        commands.forEach(KeyBind::checkAction); //Check all KeyCommands and call them, if they are pressed (see KeyBind.isFulfilled())
+    }
     /**
      * Add a KeyBind to be automatically called by this handler
      * @param c KeyBind to be added
