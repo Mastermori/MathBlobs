@@ -1,4 +1,4 @@
-package de.mathblobs;
+package de.mathblobs.logic;
 
 public class Timer {
 
