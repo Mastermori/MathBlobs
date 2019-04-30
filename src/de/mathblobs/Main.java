@@ -100,8 +100,7 @@ public class Main extends PApplet {
                 KeyboardInput.addBind(new KeyBind("num-in-" + i, new KeyCodeAction(KeyCodeAction.JUSTDOWN, KeyEvent.class.getField("VK_"+i).getInt(null)),
                         (keys) -> {
                             if (inputString.length() < 10) {
-                                inputString += "" + (keys[0] - KeyEvent.VK_0);
-                                inputText.setText(inputString);
+                                setInputString(inputString + (keys[0] - KeyEvent.VK_0));
                             }
                         }));
             } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -110,9 +109,20 @@ public class Main extends PApplet {
         }
         KeyboardInput.addBind(new KeyBind("num-remove", new KeyCodeAction(KeyCodeAction.JUSTDOWN, KeyEvent.VK_BACK_SPACE), (keys) -> {
             if (inputString.length() > 0) {
-                inputString = inputString.substring(0, inputString.length() - 1);
-                inputText.setText(inputString);
+                setInputString(inputString.substring(0, inputString.length() - 1));
             }
+        }));
+        KeyboardInput.addBind(new KeyBind("num-enter", new KeyCodeAction(KeyCodeAction.JUSTDOWN, KeyEvent.VK_ENTER), (keys) ->{
+            if (inputString.length() > 0) {
+                enterNum(Integer.parseInt(inputString));
+                setInputString("");
+            }
+        }));
+        KeyboardInput.addBind(new KeyBind("num-remove-all", new KeyCodeAction(new int[]{KeyCodeAction.DOWN, KeyCodeAction.JUSTDOWN}, new int[]{KeyEvent.VK_CONTROL, KeyEvent.VK_BACK_SPACE}),
+                (keys) -> {
+                    if (inputString.length() > 0) {
+                        setInputString("");
+                    }
         }));
 
         GSM.setGameState(GSM.INGAME); //Set the GameState to Ingame (only while testing will be changed to MainMenu once its implemented)
@@ -205,6 +215,16 @@ public class Main extends PApplet {
     @Override
     public void mouseClicked() {
         guiHandler.mouseClicked();
+    }
+
+    private static void enterNum(int num) {
+
+    }
+
+    //---------- GUI ----------
+    private static void setInputString(String s) {
+        inputString = s;
+        inputText.setText(inputString);
     }
 
     //---------- STARTUP ----------

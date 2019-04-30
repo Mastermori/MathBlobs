@@ -19,11 +19,16 @@ public class KeyBind {
         this(name, new KeyCodeAction[]{keyCodeAction}, action);
     }
 
+    public KeyBind(String name, KeyAction action, KeyCodeAction... keyCodeActions) {
+        this(name, keyCodeActions, action);
+    }
+
     public KeyBind(String name, KeyCodeAction[] keyCodeActions, KeyAction action) {
         this.name = name;
         this.keyCodeActions = keyCodeActions;
         this.action = action;
     }
+
 
     public void checkAction() {
         for (KeyCodeAction keyCodeAction : keyCodeActions) {
