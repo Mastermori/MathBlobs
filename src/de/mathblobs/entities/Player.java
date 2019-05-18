@@ -2,10 +2,13 @@ package de.mathblobs.entities;
 
 import de.mathblobs.Main;
 
+import java.util.LinkedList;
+
 public class Player extends Entity {
 
     public Player(int x, int y) {
         super(x, y, 20, 20, Main.friendlyHandler);
+        abilities = new LinkedList<>();
     }
 
     @Override
@@ -17,6 +20,12 @@ public class Player extends Entity {
     @Override
     public void draw() {
         Draw(); //Use standard draw
+    }
+
+    public void checkAbilities(float num) {
+        for (Ability a : abilities) {
+            a.checkTask(num);
+        }
     }
 
 }

@@ -7,8 +7,8 @@ public class Projectile extends Entity {
 
     int color;
 
-    public Projectile(int x, int y, int width, int height, int color) {
-        super(x, y, width, height, Main.enemyProjectileHandler);
+    public Projectile(int x, int y, int width, int height, int color, EntityHandler handler) {
+        super(x, y, width, height, handler);
         this.color = color;
     }
 

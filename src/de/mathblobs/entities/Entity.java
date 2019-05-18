@@ -3,6 +3,8 @@ package de.mathblobs.entities;
 import de.mathblobs.Main;
 import de.mathlib.Vector2;
 
+import java.util.List;
+
 public abstract class Entity {
 
     //---------- VARIABLES ----------
@@ -15,6 +17,8 @@ public abstract class Entity {
     protected Vector2 acc; //Acceleration Vector
 
     protected EntityHandler handler; //EntityHandler this is registered in
+
+    protected List<Ability> abilities;
 
 
     //---------- CONSTRUCTORS ----------
@@ -55,6 +59,20 @@ public abstract class Entity {
     public void Draw() {
         pa.fill(0); //Make the fill color black
         pa.rect(pos.x, pos.y, size.x, size.y); //Draw a rectangle at the entities position
+    }
+
+    public boolean sameSolution(float solution) {
+        System.out.println(abilities.size());
+        int appearanceCount = 0;
+        for (Ability a : abilities) {
+            if(a.sameSolution(solution))
+                appearanceCount++;
+        }
+        return appearanceCount > 1;
+    }
+
+    protected int getAbilityID(Ability ability) {
+        return abilities.indexOf(ability);
     }
 
 
@@ -102,6 +120,15 @@ public abstract class Entity {
      */
     public void destroy() {
         handler.removeEntity(this);
+    }
+
+    public void addAbility(Ability ability) {
+        abilities.add(ability);
+        System.out.println("Added ability");
+    }
+
+    public void removeAbility(Ability ability) {
+        abilities.remove(ability);
     }
 
 

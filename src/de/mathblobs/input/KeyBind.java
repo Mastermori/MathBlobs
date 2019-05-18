@@ -32,10 +32,11 @@ public class KeyBind {
 
     public void checkAction() {
         for (KeyCodeAction keyCodeAction : keyCodeActions) {
-            if(!keyCodeAction.isFulfilled())
+            if(keyCodeAction.isFulfilled()) {
+                action.execute(getKeyCodes());
                 return;
+            }
         }
-        action.execute(getKeyCodes());
     }
 
     private int[] getKeyCodes() {

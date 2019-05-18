@@ -3,6 +3,7 @@ package de.mathblobs;
 import de.guilib.Box;
 import de.guilib.GUIHandler;
 import de.guilib.Text;
+import de.mathblobs.entities.Ability;
 import de.mathblobs.entities.EntityHandler;
 import de.mathblobs.entities.Player;
 import de.mathblobs.entities.Projectile;
@@ -37,7 +38,7 @@ public class Main extends PApplet {
     public static EntityHandler enemyHandler;
     public static EntityHandler enemyProjectileHandler;
 
-    private static GUIHandler guiHandler;
+    public static GUIHandler guiHandler;
     private static Text inputText;
     private static String inputString;
     public static PFont font;
@@ -60,6 +61,9 @@ public class Main extends PApplet {
     //---------- SETUP ----------
     @Override
     public void setup() {
+        //Request focus for key inputs asap
+        frame.requestFocusInWindow();
+
         //Instantiate class variables (see above)
         friendlyHandler = new EntityHandler();
         friendlyProjectileHandler = new EntityHandler();
@@ -76,7 +80,7 @@ public class Main extends PApplet {
 
         player = new Player(100, 100);
 
-        bullet = new Projectile(200, 110, 7, 7, color(255, 0, 20));
+        bullet = new Projectile(200, 110, 7, 7, color(255, 0, 20), enemyProjectileHandler);
         bullet.addVel(new Vector2(-20f, 0));
 
         generalTimerHandler = new TimerHandler();
@@ -107,6 +111,11 @@ public class Main extends PApplet {
                 e.printStackTrace();
             }
         }
+        KeyboardInput.addBind(new KeyBind("num-put-decimal", new KeyCodeAction(KeyCodeAction.JUSTDOWN, KeyEvent.VK_PERIOD), (keys) -> {
+            if (inputString.length() > 0 && inputString.length() < 9 && !inputString.contains(".")) {
+                setInputString(inputString + '.');
+            }
+        }));
         KeyboardInput.addBind(new KeyBind("num-remove", new KeyCodeAction(KeyCodeAction.JUSTDOWN, KeyEvent.VK_BACK_SPACE), (keys) -> {
             if (inputString.length() > 0) {
                 setInputString(inputString.substring(0, inputString.length() - 1));
@@ -114,15 +123,23 @@ public class Main extends PApplet {
         }));
         KeyboardInput.addBind(new KeyBind("num-enter", new KeyCodeAction(KeyCodeAction.JUSTDOWN, KeyEvent.VK_ENTER), (keys) ->{
             if (inputString.length() > 0) {
-                enterNum(Integer.parseInt(inputString));
+                enterNum(Float.parseFloat(inputString));
                 setInputString("");
             }
         }));
-        KeyboardInput.addBind(new KeyBind("num-remove-all", new KeyCodeAction(new int[]{KeyCodeAction.DOWN, KeyCodeAction.JUSTDOWN}, new int[]{KeyEvent.VK_CONTROL, KeyEvent.VK_BACK_SPACE}),
+        KeyboardInput.addBind(new KeyBind("num-remove-all",
                 (keys) -> {
                     if (inputString.length() > 0) {
                         setInputString("");
                     }
+        },
+                new KeyCodeAction(new int[]{KeyCodeAction.DOWN, KeyCodeAction.JUSTDOWN}, new int[]{KeyEvent.VK_CONTROL, KeyEvent.VK_BACK_SPACE}),
+                new KeyCodeAction(KeyCodeAction.JUSTDOWN, KeyEvent.VK_SPACE)));
+
+        player.addAbility(new Ability("Shoot", player, 0, (parent) -> {
+            Projectile p = new Projectile((int) (player.getPos().x + player.getSize().x/2),
+                    (int) player.getPos().y, 3, 3, color(0, 255, 0), friendlyProjectileHandler);
+            p.addVel(new Vector2(0, -20f));
         }));
 
         GSM.setGameState(GSM.INGAME); //Set the GameState to Ingame (only while testing will be changed to MainMenu once its implemented)
@@ -217,8 +234,9 @@ public class Main extends PApplet {
         guiHandler.mouseClicked();
     }
 
-    private static void enterNum(int num) {
-
+    private static void enterNum(float num) {
+        System.out.println(num);
+        player.checkAbilities(num);
     }
 
     //---------- GUI ----------
