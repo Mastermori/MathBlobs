@@ -51,6 +51,10 @@ public abstract class Entity {
     public void update(float delta) {
         vel = vel.add(acc.mult(delta)); //Update the position with the velocity
         pos = pos.add(vel.mult(delta)); //Update the velocity with the acceleration
+        checkScreenLeave();
+    }
+
+    private void checkScreenLeave() {
         if (onScreenLeave == DESTROY) {
             if (getHorizontalColliders().y < 0 || getHorizontalColliders().x > Main.inst.width ||
                     getVerticalColliders().y < 0 || getVerticalColliders().x > Main.inst.height) {
