@@ -1,6 +1,5 @@
 package de.mathblobs.entities;
 
-import de.mathblobs.Main;
 import de.mathlib.Vector2;
 
 public class Projectile extends Entity {
@@ -10,6 +9,7 @@ public class Projectile extends Entity {
     public Projectile(int x, int y, int width, int height, int color, EntityHandler handler) {
         super(x, y, width, height, handler);
         this.color = color;
+        this.onScreenLeave = BOUNCE;
     }
 
     @Override

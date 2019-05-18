@@ -75,7 +75,7 @@ public class Main extends PApplet {
 
         guiHandler = new GUIHandler(this, font);
 
-        guiHandler.add(inputText = new Text(inputString = "1234567890", 10+3, height-10, createFont("Arial", 24), color(255, 0, 0), LEFT));
+        guiHandler.add(inputText = new Text(inputString = "", 10+3, height-10, createFont("Arial", 24), color(255, 0, 0), LEFT));
         guiHandler.add(new Box(10, height-24-10+2, 300, 24+5, color(0, 255, 0), false, 3));
 
         player = new Player(100, 100);
@@ -137,9 +137,10 @@ public class Main extends PApplet {
                 new KeyCodeAction(KeyCodeAction.JUSTDOWN, KeyEvent.VK_SPACE)));
 
         player.addAbility(new Ability("Shoot", player, 0, (parent) -> {
-            Projectile p = new Projectile((int) (player.getPos().x + player.getSize().x/2),
-                    (int) player.getPos().y, 3, 3, color(0, 255, 0), friendlyProjectileHandler);
-            p.addVel(new Vector2(0, -20f));
+            Projectile bullet = new Projectile((int) (player.getPos().x + player.getSize().x / 2), (int) (player.getPos().y - 3.5),
+                    7, 7, color(255, 0, 20), friendlyProjectileHandler);
+            bullet.addVel(new Vector2(0f, -40f));
+            System.out.println("Shot!");
         }));
 
         GSM.setGameState(GSM.INGAME); //Set the GameState to Ingame (only while testing will be changed to MainMenu once its implemented)
@@ -190,6 +191,9 @@ public class Main extends PApplet {
 
         if (!GSM.isGameState(GSM.PAUSED)) { //If the game is not paused, call update methods
             enemyProjectileHandler.update(delta);
+            enemyHandler.update(delta);
+
+            friendlyProjectileHandler.update(delta);
             friendlyHandler.update(delta);
 
             generalTimerHandler.update(delta);

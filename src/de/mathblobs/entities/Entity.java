@@ -10,6 +10,8 @@ public abstract class Entity {
     //---------- VARIABLES ----------
     protected static Main pa = Main.inst;
 
+    public static final int NOTHING = 0, DESTROY = 1, BOUNCE = 2;
+
     protected Vector2 pos; //Position Vector
     protected Vector2 size; //Dimensions Vector
 
@@ -19,6 +21,8 @@ public abstract class Entity {
     protected EntityHandler handler; //EntityHandler this is registered in
 
     protected List<Ability> abilities;
+
+    protected int onScreenLeave;
 
 
     //---------- CONSTRUCTORS ----------
@@ -33,21 +37,36 @@ public abstract class Entity {
         handler.addEntity(this); //Register this in the assigned handler
         vel = new Vector2(0, 0); //Set the velocity to 0
         acc = new Vector2(0, 0); //Set the acceleration to 0
+        onScreenLeave = DESTROY;
     }
 
 
     //---------- UPDATE ----------
+
     /**
      * Update method called every frame - used to apply physics to the entity - override to add additional behaviour
+     *
      * @param delta time used for calculation
      */
     public void update(float delta) {
         vel = vel.add(acc.mult(delta)); //Update the position with the velocity
         pos = pos.add(vel.mult(delta)); //Update the velocity with the acceleration
+        if (onScreenLeave == DESTROY) {
+            if (getHorizontalColliders().y < 0 || getHorizontalColliders().x > Main.inst.width ||
+                    getVerticalColliders().y < 0 || getVerticalColliders().x > Main.inst.height) {
+                destroy();
+            }
+        } else if (onScreenLeave == BOUNCE) {
+            if (getHorizontalColliders().x < 0 || getHorizontalColliders().y > Main.inst.height)
+                vel = vel.mult(-1f, 1f);
+            if(getVerticalColliders().x < 0 || getVerticalColliders().y > Main.inst.height)
+                vel = vel.mult(1f, -1f);
+        }
     }
 
 
     //---------- DRAW ----------
+
     /**
      * Draw method called every frame - override to draw entity
      */
@@ -65,7 +84,7 @@ public abstract class Entity {
         System.out.println(abilities.size());
         int appearanceCount = 0;
         for (Ability a : abilities) {
-            if(a.sameSolution(solution))
+            if (a.sameSolution(solution))
                 appearanceCount++;
         }
         return appearanceCount > 1;
@@ -77,8 +96,10 @@ public abstract class Entity {
 
 
     //---------- PHYSICS ----------
+
     /**
      * This method is called each time an object collides with this entity
+     *
      * @param other Entity this collided with
      */
     public abstract void collide(Entity other);
@@ -99,6 +120,7 @@ public abstract class Entity {
 
     /**
      * Adds velocity to the Entity
+     *
      * @param add velocity to add to this Entity
      */
     public void addVel(Vector2 add) {
@@ -107,6 +129,7 @@ public abstract class Entity {
 
     /**
      * Adds acceleration to the Entity
+     *
      * @param add acceleration to add to this Entity
      */
     public void addAcc(Vector2 add) {
@@ -115,6 +138,7 @@ public abstract class Entity {
 
 
     //---------- OTHER ----------
+
     /**
      * Destroy this Entity by releasing it's resources and removing it's reference from the handler
      */
@@ -136,6 +160,7 @@ public abstract class Entity {
     public Vector2 getPos() {
         return pos;
     }
+
     public void setPos(Vector2 pos) {
         this.pos = pos;
     }
@@ -143,7 +168,24 @@ public abstract class Entity {
     public Vector2 getSize() {
         return size;
     }
+
     public void setSize(Vector2 size) {
         this.size = size;
+    }
+
+    public List<Ability> getAbilities() {
+        return abilities;
+    }
+
+    public void setAbilities(List<Ability> abilities) {
+        this.abilities = abilities;
+    }
+
+    public int getOnScreenLeave() {
+        return onScreenLeave;
+    }
+
+    public void setOnScreenLeave(int onScreenLeave) {
+        this.onScreenLeave = onScreenLeave;
     }
 }
