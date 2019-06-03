@@ -28,4 +28,7 @@ public class Player extends Entity {
         }
     }
 
+    public void moveTo(StandingSpot standingSpot) {
+        this.pos = standingSpot.getMiddle();
+    }
 }

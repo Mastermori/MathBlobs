@@ -3,10 +3,7 @@ package de.mathblobs;
 import de.guilib.Box;
 import de.guilib.GUIHandler;
 import de.guilib.Text;
-import de.mathblobs.entities.Ability;
-import de.mathblobs.entities.EntityHandler;
-import de.mathblobs.entities.Player;
-import de.mathblobs.entities.Projectile;
+import de.mathblobs.entities.*;
 import de.mathblobs.input.KeyBind;
 import de.mathblobs.input.KeyCodeAction;
 import de.mathblobs.input.KeyboardInput;
@@ -38,6 +35,8 @@ public class Main extends PApplet {
     public static EntityHandler enemyHandler;
     public static EntityHandler enemyProjectileHandler;
 
+    public static SpotHandler playerSpotHandler;
+
     public static GUIHandler guiHandler;
     private static Text inputText;
     private static String inputString;
@@ -47,6 +46,7 @@ public class Main extends PApplet {
     public static TimerHandler ingameTimerHandler;
 
     private static Player player; //Player reference
+    private static int playerSpot;
     private static Projectile bullet; //Test-bullet reference
 
     private static long lastTime; //Used for storing last milliseconds to calculate delta time (in draw)
@@ -67,6 +67,14 @@ public class Main extends PApplet {
         //Instantiate class variables (see above)
         friendlyHandler = new EntityHandler();
         friendlyProjectileHandler = new EntityHandler();
+        playerSpotHandler = new SpotHandler();
+
+        playerSpotHandler.addSpot(new StandingSpot(width/18*3, height/10*6, 75, 75, color(0, 120, 0), playerSpotHandler));
+        playerSpotHandler.addSpot(new StandingSpot(width/18*6, height/10*8, 75, 75, color(0, 120, 0), playerSpotHandler));
+        playerSpotHandler.addSpot(new StandingSpot(width/18*9, height/10*6, 75, 75, color(0, 120, 0), playerSpotHandler));
+        playerSpotHandler.addSpot(new StandingSpot(width/18*12, height/10*8, 75, 75, color(0, 120, 0), playerSpotHandler));
+        playerSpotHandler.addSpot(new StandingSpot(width/18*15, height/10*6, 75, 75, color(0, 120, 0), playerSpotHandler));
+        playerSpotHandler.updateLists();
 
         enemyHandler = new EntityHandler();
         enemyProjectileHandler = new EntityHandler();
@@ -79,6 +87,8 @@ public class Main extends PApplet {
         guiHandler.add(new Box(10, height-24-10+2, 300, 24+5, color(0, 255, 0), false, 3));
 
         player = new Player(100, 100);
+        playerSpot = 0;
+        player.moveTo(playerSpotHandler.get(playerSpot));
 
         bullet = new Projectile(200, 110, 7, 7, color(255, 0, 20), enemyProjectileHandler);
         bullet.addVel(new Vector2(-20f, 0));
@@ -136,11 +146,10 @@ public class Main extends PApplet {
                 new KeyCodeAction(new int[]{KeyCodeAction.DOWN, KeyCodeAction.JUSTDOWN}, new int[]{KeyEvent.VK_CONTROL, KeyEvent.VK_BACK_SPACE}),
                 new KeyCodeAction(KeyCodeAction.JUSTDOWN, KeyEvent.VK_SPACE)));
 
-        player.addAbility(new Ability("Shoot", player, 0, (parent) -> {
+        player.addAbility(new Ability("Shoot", player, Ability.EASY, (parent) -> {
             Projectile bullet = new Projectile((int) (player.getPos().x + player.getSize().x / 2), (int) (player.getPos().y - 3.5),
                     7, 7, color(255, 0, 20), friendlyProjectileHandler);
             bullet.addVel(new Vector2(0f, -40f));
-            System.out.println("Shot!");
         }));
 
         GSM.setGameState(GSM.INGAME); //Set the GameState to Ingame (only while testing will be changed to MainMenu once its implemented)
@@ -196,6 +205,8 @@ public class Main extends PApplet {
             friendlyProjectileHandler.update(delta);
             friendlyHandler.update(delta);
 
+            playerSpotHandler.updateLists();
+
             generalTimerHandler.update(delta);
 
             friendlyHandler.checkCollision(enemyProjectileHandler); //Check collisions between friendly and enemyProjectile entities
@@ -205,6 +216,7 @@ public class Main extends PApplet {
             KeyboardInput.update(delta); //Needs to be last because the justPressed and justReleased lists are cleared here
         }
 
+        playerSpotHandler.draw();
         enemyProjectileHandler.draw();
         friendlyProjectileHandler.draw();
         enemyHandler.draw();
