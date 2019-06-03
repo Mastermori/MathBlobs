@@ -9,7 +9,7 @@ import java.util.List;
 public class EntityHandler {
 
     //---------- VARIABLES ----------
-    private List<Entity> entities;
+    protected List<Entity> entities;
     private List<Entity> rem; //List to remove entities (cant remove in foreach) -> ConcurrentModificationException
     private List<Entity> add; //List to add entities (cant add in foreach) -> ConcurrentModificationException
 
@@ -37,7 +37,7 @@ public class EntityHandler {
      * Draw method called every frame - used call the entities draw methods
      */
     public void draw() {
-        entities.forEach((e) -> e.draw());
+        entities.forEach(Entity::draw);
     }
 
     //---------- COLLISION CHECK ----------
@@ -78,11 +78,11 @@ public class EntityHandler {
      */
     private void updateLists() {
         if(!rem.isEmpty()) {
-            rem.forEach((e) -> entities.remove(e));
+            entities.removeAll(rem);
             rem.clear();
         }
         if(!add.isEmpty()) {
-            add.forEach((e) -> entities.add(e));
+            entities.addAll(add);
             add.clear();
         }
     }
