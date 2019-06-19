@@ -3,6 +3,7 @@
 ### Example user template
 
 # IntelliJ project files
-.idea
-out
+out/
 gen
+UML.png
+res/

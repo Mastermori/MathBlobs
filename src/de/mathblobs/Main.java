@@ -3,14 +3,20 @@ package de.mathblobs;
 import de.guilib.Box;
 import de.guilib.GUIHandler;
 import de.guilib.Text;
-import de.mathblobs.entities.*;
-import de.mathblobs.input.KeyBind;
-import de.mathblobs.input.KeyCodeAction;
-import de.mathblobs.input.KeyboardInput;
-import de.mathblobs.logic.Timer;
-import de.mathblobs.logic.TimerHandler;
-import de.mathblobs.state.GSM;
+import de.mathblobs.entities.Ability;
+import de.mathblobs.entities.Player;
+import de.mathblobs.entities.SpotHandler;
+import de.mathblobs.entities.StandingSpot;
 import de.mathlib.Vector2;
+import de.ssjgl.Game;
+import de.ssjgl.entities.EntityHandler;
+import de.ssjgl.entities.Projectile;
+import de.ssjgl.input.KeyBind;
+import de.ssjgl.input.KeyCodeAction;
+import de.ssjgl.input.KeyboardInput;
+import de.ssjgl.logic.Timer;
+import de.ssjgl.logic.TimerHandler;
+import de.ssjgl.state.GSM;
 import processing.core.PApplet;
 import processing.core.PFont;
 
@@ -21,12 +27,10 @@ import java.awt.event.KeyEvent;
  * Contains handlers and direct references to the most important objects. <br>
  * Also contains Processing methods like setup, draw, registerKeyPress, etc.
  */
-public class Main extends PApplet {
+public class Main extends Game {
 
 
     //---------- VARIABLES ----------
-    public static Main inst; //Reference to the PApplet instance used for drawing and other processing related actions
-
     private static String title = "Math Blobs"; //Title of the Window
 
     //Handlers for different Entity groups
@@ -46,7 +50,7 @@ public class Main extends PApplet {
     public static TimerHandler ingameTimerHandler;
 
     private static Player player; //Player reference
-    private static int playerSpot;
+    private static StandingSpot playerSpot;
     private static Projectile bullet; //Test-bullet reference
 
     private static long lastTime; //Used for storing last milliseconds to calculate delta time (in draw)
@@ -54,26 +58,25 @@ public class Main extends PApplet {
 
     //---------- CONSTRUCTOR ----------
     public Main() {
-        inst = this; //Set the static PApplet reference to the constructed Main object
+        super(); //Set the static PApplet reference to the constructed Main object
     }
 
 
     //---------- SETUP ----------
     @Override
     public void setup() {
-        //Request focus for key inputs asap
-        frame.requestFocusInWindow();
-
         //Instantiate class variables (see above)
         friendlyHandler = new EntityHandler();
         friendlyProjectileHandler = new EntityHandler();
         playerSpotHandler = new SpotHandler();
 
-        playerSpotHandler.addSpot(new StandingSpot(width/18*3, height/10*6, 75, 75, color(0, 120, 0), playerSpotHandler));
-        playerSpotHandler.addSpot(new StandingSpot(width/18*6, height/10*8, 75, 75, color(0, 120, 0), playerSpotHandler));
-        playerSpotHandler.addSpot(new StandingSpot(width/18*9, height/10*6, 75, 75, color(0, 120, 0), playerSpotHandler));
-        playerSpotHandler.addSpot(new StandingSpot(width/18*12, height/10*8, 75, 75, color(0, 120, 0), playerSpotHandler));
-        playerSpotHandler.addSpot(new StandingSpot(width/18*15, height/10*6, 75, 75, color(0, 120, 0), playerSpotHandler));
+        System.out.println("SETUP");
+
+        new StandingSpot(width/18*3, height/10*6, 75, 75, color(0, 120, 0), playerSpotHandler);
+        new StandingSpot(width/18*6, height/10*8, 75, 75, color(0, 120, 0), playerSpotHandler);
+        new StandingSpot(width/18*9, height/10*6, 75, 75, color(0, 120, 0), playerSpotHandler);
+        new StandingSpot(width/18*12, height/10*8, 75, 75, color(0, 120, 0), playerSpotHandler);
+        new StandingSpot(width/18*15, height/10*6, 75, 75, color(0, 120, 0), playerSpotHandler);
         playerSpotHandler.updateLists();
 
         enemyHandler = new EntityHandler();
@@ -87,8 +90,8 @@ public class Main extends PApplet {
         guiHandler.add(new Box(10, height-24-10+2, 300, 24+5, color(0, 255, 0), false, 3));
 
         player = new Player(100, 100);
-        playerSpot = 0;
-        player.moveTo(playerSpotHandler.get(playerSpot));
+        playerSpot = playerSpotHandler.get(0);
+        player.moveTo(playerSpot);
 
         bullet = new Projectile(200, 110, 7, 7, color(255, 0, 20), enemyProjectileHandler);
         bullet.addVel(new Vector2(-20f, 0));
@@ -146,11 +149,27 @@ public class Main extends PApplet {
                 new KeyCodeAction(new int[]{KeyCodeAction.DOWN, KeyCodeAction.JUSTDOWN}, new int[]{KeyEvent.VK_CONTROL, KeyEvent.VK_BACK_SPACE}),
                 new KeyCodeAction(KeyCodeAction.JUSTDOWN, KeyEvent.VK_SPACE)));
 
+        KeyboardInput.addBind(new KeyBind("move-left",
+                (keys) -> {
+                    moveLeft(1);
+                },
+                new KeyCodeAction(KeyCodeAction.JUSTDOWN, KeyEvent.VK_A),
+                new KeyCodeAction(KeyCodeAction.JUSTDOWN, KeyEvent.VK_LEFT)));
+        KeyboardInput.addBind(new KeyBind("move-right",
+                (keys) -> {
+                    moveRight(1);
+                },
+                new KeyCodeAction(KeyCodeAction.JUSTDOWN, KeyEvent.VK_D),
+                new KeyCodeAction(KeyCodeAction.JUSTDOWN, KeyEvent.VK_RIGHT)));
+
         player.addAbility(new Ability("Shoot", player, Ability.EASY, (parent) -> {
             Projectile bullet = new Projectile((int) (player.getPos().x + player.getSize().x / 2), (int) (player.getPos().y - 3.5),
                     7, 7, color(255, 0, 20), friendlyProjectileHandler);
             bullet.addVel(new Vector2(0f, -40f));
         }));
+
+        //Request focus for key inputs asap
+        frame.requestFocusInWindow();
 
         GSM.setGameState(GSM.INGAME); //Set the GameState to Ingame (only while testing will be changed to MainMenu once its implemented)
     }
@@ -213,7 +232,7 @@ public class Main extends PApplet {
             enemyHandler.checkCollision(friendlyProjectileHandler); //Check collisions between enemy and friendlyProjectile entities
             friendlyProjectileHandler.checkCollision(enemyProjectileHandler); //Check collisions between friendly and enemy projectile entities
 
-            KeyboardInput.update(delta); //Needs to be last because the justPressed and justReleased lists are cleared here
+            KeyboardInput.update(); //Needs to be last because the justPressed and justReleased lists are cleared here
         }
 
         playerSpotHandler.draw();
@@ -237,7 +256,6 @@ public class Main extends PApplet {
     @Override
     public void keyPressed() {
         KeyboardInput.registerKeyPress(keyCode, key); //Update the KeyboardInput lists
-        System.out.println(keyCode);
     }
 
     @Override
@@ -255,6 +273,20 @@ public class Main extends PApplet {
         player.checkAbilities(num);
     }
 
+    private static void moveLeft(int amount) {
+        while(amount-- > 0) {
+            playerSpot = playerSpotHandler.getLeftSpot(playerSpot);
+            player.moveTo(playerSpot);
+        }
+    }
+
+    private static void moveRight(int amount) {
+        while(amount-- > 0) {
+            playerSpot = playerSpotHandler.getRightSpot(playerSpot);
+            player.moveTo(playerSpot);
+        }
+    }
+
     //---------- GUI ----------
     private static void setInputString(String s) {
         inputString = s;
@@ -265,7 +297,7 @@ public class Main extends PApplet {
     @Override
     public void settings() {
         size(1080, 720); //Set the size of the window
-        smooth(4); //Set antialiasing from 2x to 4x
+        smooth(8); //Set antialiasing from 2x to 8x
     }
 
     public static void main(String[] args) {

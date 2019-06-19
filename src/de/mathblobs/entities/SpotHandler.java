@@ -15,24 +15,29 @@ public class SpotHandler {
         rem = new LinkedList<>();
     }
 
-    public StandingSpot getLeftSpot(int spot) {
-        StandingSpot originalSpot = spots.get(spot);
-        spots.sort((o1, o2) -> Float.compare(o2.getPos().x, o1.getPos().x));
-        int newSpot = spots.indexOf(originalSpot);
+    public StandingSpot getRightSpot(StandingSpot spot) {
+        sort();
+        int newSpot = spots.indexOf(spot);
         if (newSpot - 1 >= 0)
             return spots.get(newSpot - 1);
         else
-            return originalSpot;
+            return spot;
     }
 
-    public StandingSpot getRightSpot(int spot) {
-        StandingSpot originalSpot = spots.get(spot);
-        spots.sort((o1, o2) -> Float.compare(o2.getPos().x, o1.getPos().x));
-        int newSpot = spots.indexOf(originalSpot);
-        if (newSpot + 1 <= spots.size())
+    public StandingSpot getLeftSpot(StandingSpot spot) {
+        sort();
+        int newSpot = spots.indexOf(spot);
+        if (newSpot + 1 < spots.size())
             return spots.get(newSpot + 1);
         else
-            return originalSpot;
+            return spot;
+    }
+
+    private void sort(){
+        spots.sort((o1, o2) -> Float.compare(o2.getPos().x, o1.getPos().x));
+        /*for (StandingSpot s : spots) {
+            System.out.println(s.toString());
+        }*/
     }
 
     public StandingSpot get(int i) {

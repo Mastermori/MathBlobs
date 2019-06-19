@@ -2,17 +2,17 @@ package de.mathblobs.entities;
 
 import de.guilib.Text;
 import de.mathblobs.Main;
-import de.mathblobs.logic.AbilityAction;
 import de.mathblobs.tasks.AddTask;
 import de.mathblobs.tasks.Num;
 import de.mathblobs.tasks.SubTask;
 import de.mathblobs.tasks.Task;
 import de.mathlib.Utils;
+import de.ssjgl.Game;
 import processing.core.PApplet;
 
 public class Ability {
 
-    private static Main pa = Main.inst;
+    private static Main pa = (Main) Game.inst;
 
     public static final int EASY = 0, MEDIUM = 1, HARD = 2;
     public static final int ADD = 0, SUB = 1, MULT = 2, DIV = 3;

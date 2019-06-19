@@ -1,6 +1,6 @@
-package de.mathblobs.logic;
+package de.mathblobs.entities;
 
-import de.mathblobs.entities.Entity;
+import de.ssjgl.entities.Entity;
 
 @FunctionalInterface
 public interface AbilityAction {

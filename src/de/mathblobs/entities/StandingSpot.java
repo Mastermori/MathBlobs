@@ -2,10 +2,11 @@ package de.mathblobs.entities;
 
 import de.mathblobs.Main;
 import de.mathlib.Vector2;
+import de.ssjgl.Game;
 
 public class StandingSpot {
 
-    private static Main pa = Main.inst;
+    private static Main pa = (Main) Game.inst;
 
     private Vector2 pos, size;
     private int color;
@@ -20,8 +21,15 @@ public class StandingSpot {
     }
 
     public void draw() {
-        pa.fill(color);
+        pa.stroke(color);
+        pa.noFill();
         pa.ellipse(pos.x, pos.y, size.x, size.y);
+        pa.noStroke();
+    }
+
+    @Override
+    public String toString() {
+        return "{" + pos.toString() + " ; " + size.toString() + "}";
     }
 
     public Vector2 getHorizontalColliders() {
@@ -41,6 +49,6 @@ public class StandingSpot {
     }
 
     public Vector2 getMiddle() {
-        return pos.add(size.div(2));
+        return pos.sub(size.div(2));
     }
 }
